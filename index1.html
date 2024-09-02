@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Advice Admin</title>
+    <link rel="stylesheet" href="assets/css/index1.css">
+    <link rel="icon" type="image/x-icon" href="assets/img/logo.png">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <style>
+        body {
+            display: flex;
+        }
+
+        .l-navbar {
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        .l-navbar.open {
+            width: 80px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            margin-bottom: 20px;
+        }
+
+        #nav-toggle {
+            margin-right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        #nav-toggle.open {
+            transform: rotate(90deg);
+        }
+
+        #header-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav_logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+        }
+
+        .nav_logo img {
+            max-width: 100px;
+            transition: all 0.3s;
+        }
+
+        .l-navbar.open .nav_logo img {
+            max-width: 40px; /* Adjust the size to icon size */
+        }
+
+        .nav_list .nav_link {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+
+        .nav_list .nav_link.active {
+            background-color: #e0e0e0;
+        }
+
+        .nav_list .nav_link .nav_icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .nav_list .nav_link span {
+            display: inline-block;
+            transition: opacity 0.3s;
+        }
+
+        .l-navbar.open .nav_list .nav_link span {
+            opacity: 0;
+        }
+
+        .l-navbar.open .nav_list .nav_link {
+            justify-content: center;
+        }
+
+        /* Skeleton Loader Styles */
+        .skeleton-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #f6f7f8;
+            background-image: linear-gradient(90deg, #f6f7f8, #edeef1, #f6f7f8);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            display: none;
+            z-index: 1;
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+    <script>
+        const isLoggedIn2 = sessionStorage.getItem("isLoggedIn");
+        console.log(isLoggedIn2);
+        if (!isLoggedIn2) {
+            window.location.href = "index.html";
+        }
+    </script>
+</head>
+<body>
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div class="nav_top">
+                <a href="#" class="nav_logo">
+                    <img src="assets/img/logo.png" id="nav-logo">
+                </a>
+                <div class="nav_list">
+                    <a data-url="dashboard.html" class="nav_link active" data-title="Dashboard">
+                        <i class="bx bx-grid-alt nav_icon"></i>
+                        <span class="nav_name">Dashboard</span>
+                    </a>
+                    <a data-url="plant.html" class="nav_link" data-title="Planting Guidance">
+                        <i class="bx bxs-leaf nav_icon"></i>
+                        <span class="nav_name">Planting Guidance</span>
+                    </a>
+                    <a data-url="pest.html" class="nav_link" data-title="Pest and Disease">
+                        <i class="bx bx-bug nav_icon"></i>
+                        <span class="nav_name">Pest and Disease</span>
+                    </a>
+                    <a data-url="news.html" class="nav_link" data-title="News Update">
+                        <i class="bx bx-news nav_icon"></i>
+                        <span class="nav_name">News Update</span>
+                    </a>
+                    <!-- <a data-url="seminarRequest.html" class="nav_link" data-title="Seminar Requests">
+                        <i class="bx bx-calendar-event nav_icon"></i>
+                        <span class="nav_name">Seminar Requests <span id="notifCount" class="badge badge-light"></span></span>
+                    </a> -->
+                    <a data-url="seminarRequestTable.html" class="nav_link" data-title="Updated Seminar Requests">
+                        <i class="bx bx-calendar-event nav_icon"></i>
+                        <span class="nav_name">Seminar Requests <span id="notifCount" class="badge badge-light"></span></span>
+                    </a>
+                    <a data-url="comp.html" class="nav_link" data-title="Reports">
+                        <i class="bx bx-message-square-detail nav_icon"></i>
+                        <span class="nav_name">Reports <span class="message_count"></span></span>
+                    </a>
+                </div>
+            </div>
+            <a id="logoutButton" class="nav_link">
+                <i class="bx bx-log-out nav_icon"></i>
+                <span class="nav_name">Logout</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <i id="nav-toggle" class="bx bx-x"></i>
+            <h1 id="header-title">Dashboard</h1>
+        </header>
+        <div class="skeleton-loader" id="skeleton-loader"></div>
+        <iframe src="dashboard.html" title="Content Frame" id="content-frame"></iframe>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+            if (!isLoggedIn || isLoggedIn === "false") {
+                window.location.href = "index.html";
+            }
+
+            document.querySelectorAll('.nav_link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    document.querySelectorAll('.nav_link').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const url = this.getAttribute('data-url');
+                    const title = this.getAttribute('data-title');
+                    document.getElementById('skeleton-loader').style.display = 'block';
+                    const iframe = document.getElementById('content-frame');
+                    iframe.src = url;
+                    document.getElementById('header-title').textContent = title;
+
+                    iframe.onload = function() {
+                        document.getElementById('skeleton-loader').style.display = 'none';
+                    };
+                });
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', function (e) {
+                e.preventDefault();
+                sessionStorage.setItem("isLoggedIn", "false");
+                window.location.href = 'index.html';
+            });
+
+            const navToggle = document.getElementById('nav-toggle');
+            const navBar = document.getElementById('nav-bar');
+            const navLogo = document.getElementById('nav-logo');
+
+            navToggle.addEventListener('click', () => {
+                navBar.classList.toggle('open');
+                if(navBar.classList.contains('open')){
+                    navToggle.classList.replace('bx-x', 'bx-menu');
+                } else {
+                    navToggle.classList.replace('bx-menu', 'bx-x');
+                }
+            });
+            
+            const iframe = document.getElementById('content-frame');
+            iframe.onload = function() {
+                document.getElementById('skeleton-loader').style.display = 'none';
+            };
+        });
+    </script>
+</body>
+</html>

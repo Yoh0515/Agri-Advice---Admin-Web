@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Advice</title>
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@%5E1.0/dist/tailwind.min.css">
+    <link rel="icon" type="image/x-icon" href="assets/img/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+
+<body class="bg-gray-100">
+    <div class="content w-full p-8">
+        <div class="summary grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="info-box bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+                <span class="material-symbols-outlined text-green-500 text-4xl">inventory_2</span>
+                <p class="ptotal text-gray-600 mt-2">Total Products</p>
+                <p class="ptext text-3xl font-bold mt-2" id="totalP">0</p>
+            </div>
+            <div class="info-box bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+                <span class="material-symbols-outlined text-green-500 text-4xl">shopping_cart</span>
+                <p class="ptotal text-gray-600 mt-2">Total Orders</p>
+                <p class="ptext text-3xl font-bold mt-2" id="totalO">0</p>
+            </div>
+            <div class="info-box bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+                <span class="material-symbols-outlined text-green-500 text-4xl">people</span>
+                <p class="ptotal text-gray-600 mt-2">Total Accounts</p>
+                <p class="ptext text-3xl font-bold mt-2" id="totalA">0</p>
+            </div>
+            <div class="info-box bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+                <span class="material-symbols-outlined text-green-500 text-4xl">storefront</span>
+                <p class="ptotal text-gray-600 mt-2">Total Vendors</p>
+                <p class="ptext text-3xl font-bold mt-2" id="totalV">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <!-- Tabs Navigation -->
+            <div class="tabs flex justify-center border-b mb-6">
+                <button class="tablink py-2 px-4 text-lg font-semibold text-gray-600 border-b-2 border-transparent hover:border-blue-500 focus:outline-none" onclick="openTab(event, 'topProducts')">Top Products</button>
+                <button class="tablink py-2 px-4 text-lg font-semibold text-gray-600 border-b-2 border-transparent hover:border-blue-500 focus:outline-none" onclick="openTab(event, 'users')">Users</button>
+            </div>
+
+            <!-- Top Products Tab Content -->
+            <div id="topProducts" class="tabcontent">
+                <div class="flex items-center mb-4">
+                    <button id="openModalButton" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg">
+                        <span class="material-symbols-outlined mr-2">cloud_upload</span>
+                        <span>Upload Video to App Dashboard</span>
+                    </button>
+                </div>
+                <h2 class="topname text-2xl font-semibold mb-4">Top Selling Products</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white shadow-md rounded-lg">
+                        <thead>
+                            <tr class="w-full bg-gray-200 text-left text-gray-600 font-semibold uppercase tracking-wider">
+                                <th class="py-3 px-4">Product</th>
+                                <th class="py-3 px-4">Name</th>
+                                <th class="py-3 px-4">Vendor</th>
+                                <th class="py-3 px-4">No. Orders</th>
+                            </tr>
+                        </thead>
+                        <tbody id="container">
+                            <!-- Sales data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                    <div id="pagination" class="flex justify-center mt-4">
+                        <!-- Pagination buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab Content -->
+            <div id="users" class="tabcontent hidden">
+                <h2 class="topname text-2xl font-semibold mb-4">Users</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white shadow-md rounded-lg">
+                        <thead>
+                            <tr class="w-full bg-gray-200 text-left text-gray-600 font-semibold uppercase tracking-wider">
+                                <th class="py-3 px-4">Name</th>
+                                <th class="py-3 px-4">Email</th>
+                                <th class="py-3 px-4">Address</th>
+                                <th class="py-3 px-4">Number</th>
+                                <th class="py-3 px-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userContainer">
+                            <!-- User data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                    <div id="userPagination" class="flex justify-center mt-4">
+                        <!-- Pagination buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Upload Modal -->
+    <div id="videoModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+                <div class="bg-gray-100 p-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Dashboard Video</h3>
+                </div>
+                <div class="bg-white p-4">
+                    <video id="videoPreview" controls class="w-full rounded-lg">
+                        <source id="videoSource" src="" type="video/mp4">
+                    </video>
+                    <label for="fileInput" class="block text-sm font-medium text-gray-700 mt-4">Upload New Video</label>
+                    <input type="file" id="fileInput" accept=".mp4" class="mt-2">
+                    <div id="uploadprogress" class="text-sm text-gray-500 mt-2"></div>
+                </div>
+                <div class="bg-gray-100 p-4 flex justify-end">
+                    <button id="closeModalButton" class="bg-red-500 text-white px-4 py-2 rounded-lg">Close</button>
+                    <button id="uploadVideoButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User View Modal -->
+    <div id="userViewModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="flex items-center justify-center min-h-screen px-6">
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-2xl w-full p-6">
+                <div class="bg-gray-100 p-6 rounded-t-lg">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl leading-8 font-bold text-gray-900">User Information</h3>
+                        <button class="text-gray-500 hover:text-gray-800" onclick="closeModal('userViewModal')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-white p-6">
+                    <div class="mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3-11a3 3 0 11-6 0 3 3 0 016 0zM7 14s1-2 3-2 3 2 3 2H7z" clip-rule="evenodd"/>
+                        </svg>
+                        <p class="text-lg"><strong>Full Name:</strong> <span id="userFullName"></span></p>
+                    </div>
+                    <div class="mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A1 1 0 0017 5H3a1 1 0 00-.997.884zM18 8.118l-8 4-8-4V14a1 1 0 001 1h14a1 1 0 001-1V8.118z"/>
+                        </svg>
+                        <p class="text-lg"><strong>Email:</strong> <span id="userEmail"></span></p>
+                    </div>
+                    <div class="mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a7 7 0 00-7 7c0 3.628 2.887 6.732 7 11 4.113-4.268 7-7.372 7-11a7 7 0 00-7-7zM7 10a3 3 0 116 0 3 3 0 01-6 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <p class="text-lg"><strong>Address:</strong> <span id="userAddress"></span></p>
+                    </div>
+                    <div class="mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 2a1 1 0 011-1h14a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V2zm2 2v2h12V4H4zm0 4v2h12V8H4zm0 4v2h8v-2H4z"/>
+                        </svg>
+                        <p class="text-lg"><strong>Phone Number:</strong> <span id="userPhoneNumber"></span></p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-lg"><strong>Business Location:</strong></p>
+                        <div id="map" class="mt-4" style="height: 300px; width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-b-lg flex justify-end">
+                    <button id="closeModalButtonUser" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700" onclick="closeModal('userViewModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script>
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" border-blue-500", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " border-blue-500";
+        }
+
+        document.getElementsByClassName("tablink")[0].click(); // Click the first tab by default
+    </script>
+</body>
+
+</html>

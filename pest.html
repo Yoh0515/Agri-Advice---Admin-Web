@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Advice</title>
+    <link href="https://unpkg.com/tailwindcss@%5E1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="icon" type="image/x-icon" href="assets/img/logo.png">
+</head>
+
+<body class="bg-gray-100 font-sans antialiased">
+    <!-- Tabs -->
+    <div class="container mx-auto p-8">
+        <div class="tabs flex flex-col sm:flex-row justify-center bg-white p-4 rounded-lg shadow-md mb-8">
+            <button class="tab-button flex-1 text-center py-2 px-4 bg-gray-200 rounded-lg m-1" id="pest-tab" onclick="showTab('pest')">Pests</button>
+            <button class="tab-button flex-1 text-center py-2 px-4 bg-gray-200 rounded-lg m-1" id="disease-tab" onclick="showTab('disease')">Diseases</button>
+        </div>
+    </div>
+
+    <!-- Pests Section -->
+    <div id="pest-section" class="content w-full p-8 hidden">
+        <div class="flex justify-between mb-8">
+            <button id="addPlantBtn" class="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg transition transform hover:scale-105">
+                <span class="material-symbols-outlined mr-2">add</span>
+                Add Pest
+            </button>
+            <input type="text" class="form-control" id="searchInputPest" placeholder="Search Pests...">
+        </div>
+        <div class="plants-con bg-white p-8 rounded-lg shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="plants-container">
+                <!-- Plant cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Diseases Section -->
+    <div id="disease-section" class="content w-full p-8 hidden">
+        <div class="flex justify-between mb-8">
+            <button id="addDisBtn" class="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg transition transform hover:scale-105">
+                <span class="material-symbols-outlined mr-2">add</span>
+                Add Disease
+            </button>
+            <input type="text" class="form-control" id="searchInputDisease" placeholder="Search Diseases...">
+        </div>
+        <div class="plants-con bg-white p-8 rounded-lg shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="plants-container2">
+                <!-- Disease cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Add Pest -->
+<div id="uploadModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-6xl w-full p-4">
+        <div class="modal-header flex justify-between items-center">
+            <h5 class="text-lg font-medium">Add Pest</h5>
+            <button id="closeModalButton" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+        </div>
+        <div class="modal-body overflow-y-auto p-4 flex-1" style="max-height: 500px;">
+            <form id="pdf-upload-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="pdf-title" class="form-control w-full p-2 border rounded" placeholder="Enter title" required>
+                </div>
+                <div>
+                    <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Scientific Name</label>
+                    <input type="text" id="scientificName" class="form-control w-full p-2 border rounded" placeholder="Scientific Name" required>
+                </div>
+                <div>
+                    <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Insect Characteristics</label>
+                    <textarea id="insectCharacteristics" class="form-control w-full p-2 border rounded" placeholder="Insect Characteristics" required></textarea>
+                </div>
+                <div>
+                    <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Damage Symptom</label>
+                    <textarea id="damageSymptoms" class="form-control w-full p-2 border rounded" placeholder="Damage Symptoms" required></textarea>
+                </div>
+                <div>
+                    <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Control Measures</label>
+                    <textarea id="controlMeasures" class="form-control w-full p-2 border rounded" placeholder="Control Measures" required></textarea>
+                </div>
+                <div>
+                    <label for="category-select-update" class="block text-sm font-medium text-gray-700">Pdf</label>
+                    <label for="pdf-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">insert_drive_file</span>
+                        <span>Choose a PDF file</span>
+                    </label>
+                    <input type="file" id="pdf-file" class="hidden" accept="application/pdf">
+                </div>
+                <div>
+                    <label for="category-select-update" class="block text-sm font-medium text-gray-700">Icon</label>
+                    <label for="thumbnail-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">image</span>
+                        <span>Choose Icon</span>
+                    </label>
+                    <input type="file" id="thumbnail-file" class="hidden" accept="image/*">
+                </div>
+                <div>
+                    <label for="add-pest-file" class="block text-sm font-medium text-gray-700">Pest Images</label>
+                    <label for="add-pest-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">image</span>
+                        <span>Choose Images for Pests</span>
+                    </label>
+                    <input type="file" id="add-pest-file" class="hidden" accept="image/*" multiple>
+                </div>
+                <div id="thumbnail-preview" class="hidden mt-4">
+                    <h3 class="text-sm font-medium">Icon:</h3>
+                    <img id="thumbnail-img" src="" alt="Thumbnail Preview" class="w-24 h-24 object-cover rounded">
+                </div>
+                <div id="pest-preview" class="hidden mt-4 col-span-2">
+                    <h3 class="text-sm font-medium">Pest Images:</h3>
+                    <div id="pest-images" class="flex space-x-4"></div>
+                </div>
+                <div>
+                    <label for="add-pest-titles" class="block text-sm font-medium text-gray-700">Pest Image Titles</label>
+                    <div id="add-pest-titles" class="space-y-2">
+                        <!-- Titles will be dynamically added here -->
+                    </div>
+                </div>
+                <div id="pdf-preview" class="hidden mt-4">
+                    <h3 class="text-sm font-medium">PDF Preview:</h3>
+                    <iframe id="pdf-frame" class="w-full h-48"></iframe>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer mt-4 flex justify-end">
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg" id="btnUpload" form="pdf-upload-form">Save</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Modal View Pest Details -->
+    <div id="pestModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-6xl w-full max-h-full flex flex-col">
+            <div class="modal-header flex justify-between items-center p-4 border-b">
+                <h5 id="pestModalLabel" class="text-lg font-medium">Pest Title</h5>
+                <button id="closePestModalButton" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+            </div>
+            <div class="modal-body overflow-y-auto p-4 flex-1" style="max-height: 500px;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="font-semibold">Scientific Name:</h3>
+                        <p id="view-scientificName"></p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">Insect Characteristics:</h3>
+                        <p id="view-insectCharacteristics"></p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">Damage Symptoms:</h3>
+                        <p id="view-damageSymptoms"></p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">Control Measures:</h3>
+                        <p id="view-controlMeasures"></p>
+                    </div>
+                    <div class="col-span-2">
+                        <h3 class="font-semibold">Pest Images:</h3>
+                        <div id="view-pest-images" class="flex space-x-4">
+                            <!-- Pest Images will be dynamically inserted here -->
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <h3 class="font-semibold">PDF Preview:</h3>
+                        <iframe id="view-pdfContent" class="w-full h-48"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Update Pest -->
+<div id="updatePlantModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-6xl w-full p-4">
+        <div class="modal-header flex justify-between items-center">
+            <h5 class="text-lg font-medium">Update Pest</h5>
+            <button id="closeUpdatePlantModalButton" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+        </div>
+        <div class="modal-body mt-4">
+            <form id="update-pdf-upload-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <input type="hidden" id="hiddenPlantId">
+                    <input type="hidden" id="hiddenIconURL">
+                    <input type="hidden" id="hiddenPdfUrl">
+                    <label for="symptoms" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="update-plant-title" class="form-control w-full p-2 border rounded" placeholder="Enter title" required>
+                </div>
+                <div>
+                    <label for="update-scientificName" class="block text-sm font-medium text-gray-700">Scientific Name</label>
+                    <input type="text" id="update-scientificName" class="form-control w-full p-2 border rounded" placeholder="Scientific Name" required>
+                </div>
+                <div>
+                    <label for="update-insectCharacteristics" class="block text-sm font-medium text-gray-700">Insect Characteristics</label>
+                    <textarea id="update-insectCharacteristics" class="form-control w-full p-2 border rounded" placeholder="Insect Characteristics" required></textarea>
+                </div>
+                <div>
+                    <label for="update-damageSymptoms" class="block text-sm font-medium text-gray-700">Damage Symptoms</label>
+                    <textarea id="update-damageSymptoms" class="form-control w-full p-2 border rounded" placeholder="Damage Symptoms" required></textarea>
+                </div>
+                <div>
+                    <label for="update-controlMeasures" class="block text-sm font-medium text-gray-700">Control Measures</label>
+                    <textarea id="update-controlMeasures" class="form-control w-full p-2 border rounded" placeholder="Control Measures" required></textarea>
+                </div>
+                <div>
+                    <label for="category-select-update" class="block text-sm font-medium text-gray-700">Pdf</label>
+                    <label for="update-pdf-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">insert_drive_file</span>
+                        <span>Choose a PDF file</span>
+                    </label>
+                    <input type="file" id="update-pdf-file" class="hidden" accept="application/pdf">
+                </div>
+                <div>
+                    <label for="update-pest-file" class="block text-sm font-medium text-gray-700">Pest Images</label>
+                    <label for="update-pest-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">image</span>
+                        <span>Choose Images for Pests</span>
+                    </label>
+                    <input type="file" id="update-pest-file" class="hidden" accept="image/*" multiple>
+                </div>
+                <div>
+                    <label for="category-select-update" class="block text-sm font-medium text-gray-700">Icon</label>
+                    <label for="update-thumbnail-file" class="flex items-center cursor-pointer">
+                        <span class="material-symbols-outlined mr-2">image</span>
+                        <span>Choose Icon</span>
+                    </label>
+                    <input type="file" id="update-thumbnail-file" class="hidden" accept="image/*">
+                </div>
+                <div id="update-thumbnail-preview" class="hidden mt-4">
+                    <h3 class="text-sm font-medium">Icon:</h3>
+                    <img id="update-thumbnail-img" src="" alt="Thumbnail Preview" class="w-24 h-24 object-cover rounded">
+                </div>
+                <div id="update-pest-preview" class="hidden mt-4 col-span-2">
+                    <h3 class="text-sm font-medium">Pest Images:</h3>
+                    <div id="update-pest-images" class="flex space-x-4"></div>
+                </div>
+                <div id="update-pest-titles-preview" class="hidden mt-4 col-span-2">
+                    <h3 class="text-sm font-medium">Pest Image Titles:</h3>
+                    <div id="update-pest-titles" class="space-y-2">
+                        <!-- Titles will be dynamically added here -->
+                    </div>
+                </div>
+                <div id="update-pdf-preview" class="hidden mt-4">
+                    <h3 class="text-sm font-medium">PDF Preview:</h3>
+                    <iframe id="update-pdf-frame" class="w-full h-48"></iframe>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer mt-4 flex justify-end">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="btnUpdatePlant" form="update-pdf-upload-form">Update</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal Add Disease -->
+    <div id="uploadModal2" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-6xl w-full p-4">
+            <div class="modal-header flex justify-between items-center">
+                <h5 class="text-lg font-medium">Add Disease</h5>
+                <button id="closeModalButton3" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+            </div>
+            <div class="modal-body overflow-y-auto p-4 flex-1" style="max-height: 500px;">
+                <form id="pdf-upload-form2" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="symptoms" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="pdf-title2" class="form-control w-full p-2 border rounded" placeholder="Enter title" required>
+                    </div>
+                    <div>
+                        <label for="diseaseDescription" class="block text-sm font-medium text-gray-700">Disease Description</label>
+                        <textarea id="diseaseDescription" class="form-control w-full p-2 border rounded" placeholder="Disease Description" required></textarea>
+                    </div>
+                    <div>
+                        <label for="symptoms" class="block text-sm font-medium text-gray-700">Symptoms</label>
+                        <textarea id="symptoms" class="form-control w-full p-2 border rounded" placeholder="Symptoms" required></textarea>
+                    </div>
+                    <div>
+                        <label for="diseaseDevelopment" class="block text-sm font-medium text-gray-700">Disease Development</label>
+                        <textarea id="diseaseDevelopment" class="form-control w-full p-2 border rounded" placeholder="Disease Development" required></textarea>
+                    </div>
+                    <div>
+                        <label for="culturalControl" class="block text-sm font-medium text-gray-700">Cultural Control</label>
+                        <textarea id="culturalControl" class="form-control w-full p-2 border rounded" placeholder="Cultural Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="chemicalControl" class="block text-sm font-medium text-gray-700">Chemical Control</label>
+                        <textarea id="chemicalControl" class="form-control w-full p-2 border rounded" placeholder="Chemical Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="biologicalControl" class="block text-sm font-medium text-gray-700">Biological Control</label>
+                        <textarea id="biologicalControl" class="form-control w-full p-2 border rounded" placeholder="Biological Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="category-select-update" class="block text-sm font-medium text-gray-700">Pdf</label>
+                        <label for="pdf-file2" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">insert_drive_file</span>
+                            <span>Choose a PDF file</span>
+                        </label>
+                        <input type="file" id="pdf-file2" class="hidden" accept="application/pdf">
+                    </div>
+                    <div>
+                        <label for="category-select-update" class="block text-sm font-medium text-gray-700">Icon</label>
+                        <label for="thumbnail-file2" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">image</span>
+                            <span>Choose Icon</span>
+                        </label>
+                        <input type="file" id="thumbnail-file2" class="hidden" accept="image/*">
+                    </div>
+                    <div>
+                        <label for="add-disease-file" class="block text-sm font-medium text-gray-700">Disease Images</label>
+                        <label for="add-disease-file" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">image</span>
+                            <span>Choose Images for Disease</span>
+                        </label>
+                        <input type="file" id="add-disease-file" class="hidden" accept="image/*" multiple>
+                    </div>
+                    <div id="thumbnail-preview2" class="hidden mt-4">
+                        <h3 class="text-sm font-medium">Icon:</h3>
+                        <img id="thumbnail-img2" src="" alt="Thumbnail Preview" class="w-24 h-24 object-cover rounded">
+                    </div>
+                    <div id="disease-preview" class="hidden mt-4 col-span-2">
+                        <h3 class="text-sm font-medium">Disease Images:</h3>
+                        <div id="disease-images" class="flex space-x-4"></div>
+                    </div>
+                    <div>
+                        <label for="add-disease-titles" class="block text-sm font-medium text-gray-700">Disease Image Titles</label>
+                        <div id="add-disease-titles" class="space-y-2">
+                            <!-- Titles will be dynamically added here -->
+                        </div>
+                    </div>
+                    
+                    <div id="pdf-preview2" class="hidden mt-4">
+                        <h3 class="text-sm font-medium">PDF Preview:</h3>
+                        <iframe id="pdf-frame2" class="w-full h-48"></iframe>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer mt-4 flex justify-end">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg" id="btnUpload2" form="pdf-upload-form2">Save</button>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal View Disease Details -->
+<div id="plantModal2" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+    <div style="background-color: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); max-width: 90%; width: 100%; max-height: 95vh; padding: 1rem;">
+        <div class="modal-header flex justify-between items-center">
+            <h5 id="plantModalLabel2" class="text-lg font-medium">Disease Title</h5>
+            <button id="closePlantModalButton2" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+        </div>
+        <div class="modal-body overflow-y-auto p-4 flex-1" style="max-height: 500px;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold">Disease Description:</h3>
+                    <p id="view-diseaseDescription"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Symptoms:</h3>
+                    <p id="view-symptoms"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Disease Development:</h3>
+                    <p id="view-diseaseDevelopment"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Cultural Control:</h3>
+                    <p id="view-culturalControl"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Chemical Control:</h3>
+                    <p id="view-chemicalControl"></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Biological Control:</h3>
+                    <p id="view-biologicalControl"></p>
+                </div>
+                <div class="col-span-2">
+                    <h3 class="font-semibold">Disease Images:</h3>
+                    <div id="view-disease-images" class="flex space-x-4">
+                        <!-- Disease Images will be dynamically inserted here -->
+                    </div>
+                </div>
+                <div class="col-span-2">
+                    <h3 class="font-semibold">PDF Preview:</h3>
+                    <iframe id="view-pdfContent2" class="w-full h-48"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Modal Update Disease -->
+    <div id="updatePlantModal2" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-6xl w-full p-4">
+            <div class="modal-header flex justify-between items-center">
+                <h5 class="text-lg font-medium">Update Disease</h5>
+                <button id="closeUpdatePlantModalButton2" class="text-gray-500 text-3xl hover:text-gray-800">&times;</button>
+            </div>
+            <div class="modal-body overflow-y-auto p-4 flex-1" style="max-height: 500px;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <input type="hidden" id="hiddenPlantId2">
+                        <input type="hidden" id="hiddenIconURL">
+                        <input type="hidden" id="hiddenPdfUrl">
+                        <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="update-plant-title2" class="form-control w-full p-2 border rounded" placeholder="Enter title" required>
+                    </div>
+                    <div>
+                        <label for="update-diseaseDescription" class="block text-sm font-medium text-gray-700">Disease Description</label>
+                        <textarea id="update-diseaseDescription" class="form-control w-full p-2 border rounded" placeholder="Disease Description" required></textarea>
+                    </div>
+                    <div>
+                        <label for="update-symptoms" class="block text-sm font-medium text-gray-700">Symptoms</label>
+                        <textarea id="update-symptoms" class="form-control w-full p-2 border rounded" placeholder="Symptoms" required></textarea>
+                    </div>
+                    <div>
+                        <label for="update-diseaseDevelopment" class="block text-sm font-medium text-gray-700">Disease Development</label>
+                        <textarea id="update-diseaseDevelopment" class="form-control w-full p-2 border rounded" placeholder="Disease Development" required></textarea>
+                    </div>
+                    <div>
+                        <label for="update-culturalControl" class="block text-sm font-medium text-gray-700">Cultural Control</label>
+                        <textarea id="update-culturalControl" class="form-control w-full p-2 border rounded" placeholder="Cultural Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="update-chemicalControl" class="block text-sm font-medium text-gray-700">Chemical Control</label>
+                        <textarea id="update-chemicalControl" class="form-control w-full p-2 border rounded" placeholder="Chemical Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="update-biologicalControl" class="block text-sm font-medium text-gray-700">Biological Control</label>
+                        <textarea id="update-biologicalControl" class="form-control w-full p-2 border rounded" placeholder="Biological Control" required></textarea>
+                    </div>
+                    <div>
+                        <label for="category-select-update" class="block text-sm font-medium text-gray-700">Pdf</label>
+                        <label for="update-pdf-file2" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">insert_drive_file</span>
+                            <span>Choose a PDF file</span>
+                        </label>
+                        <input type="file" id="update-pdf-file2" class="hidden" accept="application/pdf">
+                    </div>
+                    <div>
+                        <label for="category-select-update" class="block text-sm font-medium text-gray-700">Icon</label>
+                        <label for="update-thumbnail-file2" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">image</span>
+                            <span>Choose Icon</span>
+                        </label>
+                        <input type="file" id="update-thumbnail-file2" class="hidden" accept="image/*">
+                    </div>
+                    <div>
+                        <label for="update-disease-file" class="block text-sm font-medium text-gray-700">Disease Images</label>
+                        <label for="update-disease-file" class="flex items-center cursor-pointer">
+                            <span class="material-symbols-outlined mr-2">image</span>
+                            <span>Choose Images for Disease</span>
+                        </label>
+                        <input type="file" id="update-disease-file" class="hidden" accept="image/*" multiple>
+                    </div>
+                    <div id="update-thumbnail-preview2" class="hidden mt-4">
+                        <h3 class="text-sm font-medium">Icon:</h3>
+                        <img id="update-thumbnail-img2" src="" alt="Thumbnail Preview" class="w-24 h-24 object-cover rounded">
+                    </div>
+                    <div id="update-disease-preview" class="hidden mt-4 col-span-2">
+                        <h3 class="text-sm font-medium">Disease Images:</h3>
+                        <div id="update-disease-images" class="flex space-x-4"></div>
+                    </div>
+                    <div id="update-disease-titles" class="titles mt-2">
+                        <!-- Titles for the selected images will be added here dynamically -->
+                    </div>
+                    <div id="update-pdf-preview2" class="hidden mt-4">
+                        <h3 class="text-sm font-medium">PDF Preview:</h3>
+                        <iframe id="update-pdf-frame2" class="w-full h-48"></iframe>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer mt-4 flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="btnUpdatePlant2" form="update-pdf-upload-form2">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="assets/js/pestDisease.js"></script>
+    <script>
+        function showTab(tab) {
+            document.getElementById('pest-section').classList.add('hidden');
+            document.getElementById('disease-section').classList.add('hidden');
+            document.getElementById('pest-tab').classList.remove('bg-green-500', 'text-white');
+            document.getElementById('disease-tab').classList.remove('bg-green-500', 'text-white');
+
+            if (tab === 'pest') {
+                document.getElementById('pest-section').classList.remove('hidden');
+                document.getElementById('pest-tab').classList.add('bg-green-500', 'text-white');
+            } else if (tab === 'disease') {
+                document.getElementById('disease-section').classList.remove('hidden');
+                document.getElementById('disease-tab').classList.add('bg-green-500', 'text-white');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('pest');
+        });
+    </script>
+</body>
+
+</html>

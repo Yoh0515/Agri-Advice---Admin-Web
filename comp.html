@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri-Advice Complaints</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined:opsz,wght,400,500,600,700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="assets/css/complaints.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<body class="bg-gray-100 font-sans antialiased">
+
+    
+    <div class="content w-full p-8">
+        <h2 class="mb-4 text-2xl font-semibold">Reports Table</h2>
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <div class="flex justify-end mb-4">
+                <div class="relative mr-2">
+                    <input type="text" id="dateFilter" class="bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hidden">
+                    <div id="calendarIcon" class="calendar-icon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                </div>
+                <button id="exportExcel" class="bg-green-500 text-white px-4 py-2 rounded-lg mr-2">Save to Excel</button>
+                <button id="exportPDF" class="bg-red-500 text-white px-4 py-2 rounded-lg">Save to PDF</button>
+            </div>
+            <table id="example" class="stripe hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Report Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Evidence</th>
+                        <th>Status</th>
+                        <th>Action Taken</th>
+                        <th>Date Resolved</th>
+                        <th>Admin First Response Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<!-- Complaint Modal -->
+<div id="complaintModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-2xl w-full p-6">
+        <div class="modal-header flex justify-between items-center mb-4">
+            <h5 class="text-xl font-semibold">Customer Complaint</h5>
+            <button class="text-gray-500 text-3xl hover:text-gray-800" onclick="closeModal('complaintModal')">
+                <i class="fas fa-times h-8 w-8"></i>
+            </button>
+        </div>
+        <div class="modal-body mt-4">
+            <div class="grid grid-cols-2 gap-6 text-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-hashtag h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Complaint Number:</span>
+                </div>
+                <div id="modalComplaintNumber"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-user h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Customer:</span>
+                </div>
+                <div id="modalCustomer"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-envelope h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Email:</span>
+                </div>
+                <div id="modalEmail"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-comment h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Complaint:</span>
+                </div>
+                <div id="modalComplaintText"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Status:</span>
+                </div>
+                <div id="modalStatus"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-tasks h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Action Taken:</span>
+                </div>
+                <div id="actionTakenView"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-day h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Date Send:</span>
+                </div>
+                <div id="modalDate"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-check h-8 w-8 mr-3"></i>
+                    <span class="font-semibold">Date Resolved:</span>
+                </div>
+                <div id="dateResolvedView"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-day h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Admin First Response Date:</span>
+                </div>
+                <div id="firstResponseView"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-stopwatch h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Total Process Time:</span>
+                </div>
+                <div id="totalProcessTimeView"></div>
+
+                <div class="flex items-center">
+                    <i class="fas fa-image h-7 w-8 mr-3"></i>
+                    <span class="font-semibold">Evidence:</span>
+                </div>
+                <div>
+                    <img id="modalEvidence" src="" alt="Evidence Image" class="w-32 h-32 object-cover rounded-md">
+                </div>
+            </div>
+        </div>
+        <!-- Hidden Fields for Report and Chat IDs -->
+        <input type="hidden" id="hiddenField">
+        <input type="hidden" id="hiddenChatField">
+        <!-- Modal Footer -->
+        <div class="modal-footer mt-6 flex justify-end">
+            <button class="bg-red-500 text-white px-6 py-3 rounded-lg ml-2" onclick="saveComplaintToPDF()">Save to PDF</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Chat Modal -->
+    <div id="chats" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-2xl w-full p-4">
+            <div class="modal-header flex justify-between items-center">
+                <h5 class="text-lg font-medium">Customer Complaint</h5>
+                <button class="text-gray-500 text-3xl hover:text-gray-800" onclick="closeModal('chats')">&times;</button>
+            </div>
+            <div class="modal-body mt-4">
+                <input type="hidden" id="hiddenField">
+                <input type="hidden" id="hiddenFieldOrgsender">
+                <input type="hidden" id="hiddenFieldOrgSenderemail">
+                <input type="hidden" id="hiddenFieldOrgAdmin">
+                <input type="hidden" id="hiddenFieldOrgAdminEmail">
+
+                <div class="bg-gray-100">
+                    <div class="p-4 border-b border-gray-300">Chat</div>
+                    <div class="flex flex-col h-96 overflow-y-auto" id="chatBodyContainer">
+                        <div class="p-4" id="chatBody"></div>
+                    </div>
+                    <div class="p-4 border-t border-gray-300">
+                        <input type="text" placeholder="Type a message..."
+                            class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:ring-blue-500"
+                            id="message">
+                        <div class="flex justify-between mt-2 items-center">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="resolved">Tag as Resolved</button>
+                            <label for="fileInput" class="bg-gray-300 px-4 py-2 rounded-lg cursor-pointer">
+                                <input type="file" id="fileInput" multiple style="display: none;"> Attach File
+                            </label>
+                            <div id="attachmentPreview" class="flex gap-2"></div>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="sendmessage">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal Tag as Resolved -->
+        <div id="tagAsResolved" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex">
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full p-4">
+                <div class="modal-header flex justify-between items-center">
+                    <h5 class="text-lg font-medium">Resolve Complaint</h5>
+                </div>
+                <div class="modal-body mt-4">
+                    <form id="pdf-upload-form" class="space-y-4">
+                        <div>
+                            <input type="text" id="actionTaken" class="form-control w-full p-2 border rounded" placeholder="Input Action Taken" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer mt-4 flex justify-end">
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg" id="submitActionResolve" form="pdf-upload-form">Save</button>
+                </div>
+            </div>
+        </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- xlsx library for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- jsPDF library for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <!-- <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.5/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.5/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="assets/js/complaints.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</body>
+
+</html>

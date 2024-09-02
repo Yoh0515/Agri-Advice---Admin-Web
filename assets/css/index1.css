@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+:root {
+  --header-height: 3rem;
+  --nav-width: 300px;
+  --first-color: #4723d9;
+  --first-color-light: #afa5d9;
+  --white-color: #f7f6fb;
+  --body-font: "Nunito", sans-serif;
+  --normal-font-size: 1rem;
+  --z-fixed: 100;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+  transition: 0.5s;
+  background-color: white;
+}
+
+.l-navbar {
+  width: var(--nav-width);
+  height: 100vh;
+  background-color: white;
+  padding: 1rem 0;
+  transition: 0.5s;
+  z-index: var(--z-fixed);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.nav {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav_top {
+  flex-grow: 1;
+}
+
+.nav_logo,
+.nav_link {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: center;
+  column-gap: 1rem;
+  padding: 0.5rem 2rem;
+}
+
+.nav_logo {
+  margin-bottom: 2rem;
+}
+
+.nav_logo-icon,
+.nav_icon {
+  font-size: 1.75rem;
+  color: black;
+}
+
+.nav_logo-name,
+.nav_name {
+  color: black;
+  font-weight: 700;
+}
+
+.nav_link {
+  position: relative;
+  color: black;
+  margin-bottom: 1.5rem;
+  transition: 0.3s;
+}
+
+.nav_link:hover,
+.nav_link.active {
+  color: var(--first-color);
+}
+
+.nav_link:hover::before,
+.nav_link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background-color: green;
+}
+
+.nav_toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--first-color);
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: var(--z-fixed);
+  transition: 0.3s;
+}
+
+.nav_toggle.open {
+  background-color: var(--first-color-light);
+}
+
+.nav_toggle i {
+  font-size: 1.5rem;
+}
+
+.l-navbar.open {
+  width: 80px;
+}
+
+.l-navbar.open .nav_logo-name,
+.l-navbar.open .nav_name {
+  display: none;
+}
+
+.l-navbar.open .nav_link {
+  justify-content: center;
+}
+
+.l-navbar.open .nav_link i {
+  margin-right: 0;
+}
+
+.main-content {
+  flex-grow: 1;
+  height: 100vh;
+  overflow: auto;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
